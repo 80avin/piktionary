@@ -10,7 +10,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-prebuild": "echo This runs before Heroku installs your dependencies.",
-    "build":"./build_client.sh"
+    "build":"bash ./build_client.sh"
   },
   "author": "",
   "license": "ISC",
