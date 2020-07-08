@@ -1,6 +1,6 @@
 # Piktionary
 
-[![Deploy](https://heroku-badge.herokuapp.com/?app={piktionary080})](https://piktionary080.herokuapp.com)
+[![Deploy](https://heroku-badge.herokuapp.com/?app=piktionary080)](https://piktionary080.herokuapp.com)
 
 
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
 cd client
-npm i
+yarn
 npm run build
 cd ..
