@@ -12,25 +12,29 @@ const Canvas = () => {
       currentPos: [0, 0],
       color: '#ff0000',
       tool: 'line',
-      size: '2',
+      size: '20',
+      toolProps:{lineCap:'round'}
     }
     console.log(canvasRef, canvasRef.current);
-  })
+  });
 
   const drawStart = (e) => {
+    e.preventDefault();
     console.log('drawStart', {...e})
     configRef.current.enabled = true;
-
+    configRef.current.currentPos=cssToNormalPos(getPosFromEvent(e));
+    // console.log(configRef)
   }
   const drawEnd = (e) => {
-    console.log('drawEnd', { ...e })
+    e.preventDefault();
+    console.log('drawEnd', { ...e });
     configRef.current.enabled = false;
   }
   const drawMove = (e) => {
+    e.preventDefault();
+    if(!configRef.current.enabled) return;
     // console.log('drawMove', { ...e });
-    const targetPos = [e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY];
-    targetPos[0]= targetPos[0]-e.target.offsetLeft;
-    targetPos[1]= targetPos[1]-e.target.offsetTop;
+    const targetPos = cssToNormalPos(getPosFromEvent(e));
     
     const data = {
       config: configRef.current,
@@ -47,6 +51,23 @@ const Canvas = () => {
     };
   }
 
+  const getPosFromEvent = (e)=>{
+    if( typeof(e.pageX)!=="undefined"){
+      return [
+        (e.pageX) - e.target.offsetLeft - e.target.clientLeft,
+        (e.pageY) - e.target.offsetTop - e.target.clientTop,
+      ]
+    }
+    else if(e.touches){
+      return [
+        (e.touches[0].pageX) - e.target.offsetLeft - e.target.clientLeft,
+        (e.touches[0].pageY) - e.target.offsetTop - e.target.clientTop,
+      ]
+    }
+  }
+  const cssToNormalPos = (pos) => [100*pos[0]/canvasRef.current.clientWidth, 100*pos[1]/canvasRef.current.clientHeight];
+  const normalToCanvasPos = (pos)=> [pos[0]*canvasRef.current.width/100, pos[1]*canvasRef.current.height/100];
+
   const drawCanvas = (data,) => {
     console.log({ data }, ctxRef);
     const ctx = ctxRef.current;
@@ -54,8 +75,11 @@ const Canvas = () => {
     switch (data.config.tool) {
       case 'line':
         ctx.beginPath();
-        ctx.moveTo(...data.config.currentPos);
-        ctx.lineTo(...data.to);
+        ctx.moveTo(...normalToCanvasPos(data.config.currentPos));
+        ctx.lineTo(...normalToCanvasPos(data.to));
+        for(var k of Object.keys(data.config.toolProps)){
+          ctx[k]=data.config.toolProps[k]
+        }
         ctx.strokeStyle=data.config.color;
         ctx.lineWidth=data.config.size;
         ctx.stroke();
@@ -65,7 +89,12 @@ const Canvas = () => {
         break;
     }
   }
-
+  const floodFill = (pos, targetColor)=>{
+    let pixelStack = [[...pos]];
+    while(pixelStack.length){
+      
+    }
+  }
   return (
       <canvas ref={canvasRef} width='500' height='500'
         onMouseDown={drawStart}
@@ -78,7 +107,7 @@ const Canvas = () => {
         onTouchCancel={drawEnd}
         onTouchMove={drawMove}
 
-        style={{border:'1px solid black'}}
+        style={{border:'1px solid black', touchAction:'none'}}
       />
   );
 }

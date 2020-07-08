@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="debug">
+  </div>
+  <textarea rows="5" cols="10"></textarea>
+  <script>
+    const debug = document.querySelector('#debug');
+    window.onresize=(e)=>{
+      console.log(e);
+      debug.innerText = JSON.stringify(e.target.innerHeight)
+    }
+  </script>
+</body>
+</html>

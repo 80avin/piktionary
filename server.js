@@ -2,13 +2,12 @@ var PORT = process.env.PORT || 8080;
 
 const express = require('express');
 const path = require('path');
-const { addUser } = require('./users');
+const { addUser } = require('./src/users');
 const app = express()
-//io.set('log level', 2);
 
 //app.use(express.bodyParser());
-app.use(express.static(path.join(__dirname, 'client', 'build')))
-app.get('/', function (req, res) { res.sendFile(__dirname + '/client.html'); });
+app.use(require('./src/routes'));
+
 const server = app.listen(PORT, null, function () {
   console.log("Listening on port " + PORT);
 });
@@ -20,7 +19,7 @@ io.on('connection', function (socket) {
   console.log(`[${socket.id}] connected to default room`)
 });
 
-// by avinash : test custom room
+// custom room : '/anyword'
 io.of(/^\/\w+$/).on('connection', socket => {
   const room = socket.nsp.name;
   console.log(`[${socket.id}] connected to ${room}`);
@@ -37,3 +36,7 @@ io.of(/^\/\w+$/).on('connection', socket => {
   socket.on('drawing',data=>socket.nsp.broadcast.emit('drawing',data));
 
 });
+
+// app.get('*',(req,res)=>{
+//   res.sendFile(path.join(__dirname, 'client','build','index.html'))
+// })

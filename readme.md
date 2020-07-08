@@ -6,4 +6,6 @@
 
 References :
 
-* https://github.com/dondido/webrtc-video-room
+* chat room : https://github.com/dondido/webrtc-video-room
+* flood fill : https://ben.akrin.com/?p=7888
+* flood fill : http://www.williammalone.com/articles/html5-canvas-javascript-paint-bucket-tool/
