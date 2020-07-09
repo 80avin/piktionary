@@ -1,3 +1,6 @@
+# custom
+client/build/
+
 # Logs
 logs
 *.log

@@ -1,10 +1,18 @@
 import React, { useRef, useEffect } from 'react'
-
+import io from 'socket.io-client'
 const Canvas = () => {
   const canvasRef = useRef(null);
   const ctxRef = useRef();
   const configRef = useRef();
+  const socketRef = useRef();
+
+  const setupSocket = (socket)=>{
+    socket.on('drawing',console.log);//(data)=>drawCanvas(data));
+  }
   useEffect(() => {
+    // socketRef.current = io('/room');
+    socketRef.current = io(prompt('Enter room','/room'));
+    // socketRef.current.on('drawing',drawCanvas);
     const canvas = canvasRef.current;
     ctxRef.current = canvas.getContext('2d');
     configRef.current = {
@@ -12,11 +20,13 @@ const Canvas = () => {
       currentPos: [0, 0],
       color: '#ff0000',
       tool: 'line',
-      size: '20',
+      size: '2',
       toolProps:{lineCap:'round'}
     }
     console.log(canvasRef, canvasRef.current);
-  });
+    setupSocket(socketRef.current);
+    return ()=>socketRef.current.disconnect()
+  },[]);
 
   const drawStart = (e) => {
     e.preventDefault();
@@ -43,7 +53,7 @@ const Canvas = () => {
 
     if (configRef.current.enabled) {
       drawCanvas(data);
-      // sendDraw(data);
+      socketRef.current.emit('drawing',data);
     }
     configRef.current = {
       ...configRef.current,
