@@ -15,7 +15,7 @@ const Canvas = props => {
       onTouchCancel={props.drawEnd}
       onTouchMove={props.drawMove}
 
-      style={{ width:'min(100vw,100vh)',height:'min(100vw,100vh)',border: '0px solid black', touchAction: 'none', backgroundColor:'white' }}
+      style={{ width:'min(100vw,100vh)',height:'min(100vw,100vh)',border: '0px solid black', touchAction: 'pinch-zoom', backgroundColor:'white' }}
     />
   )
 }
