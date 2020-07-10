@@ -21,6 +21,8 @@ const init = (server) => {
       socket.to(room).broadcast.emit('message', { data: 'empty data' })
     });
 
+    socket.on('imageRequest',()=>socket.broadcast.emit('imageRequest'));
+
     socket.on('drawing', data => {
       // console.log('drawing',data, room);
       socket.broadcast.emit('drawing', data);

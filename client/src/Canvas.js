@@ -30,7 +30,8 @@ const Canvas = () => {
 
   const drawStart = (e) => {
     e.preventDefault();
-    console.log('drawStart', {...e})
+    console.log('drawStart', {...e});
+    // TODO keep undo stack
     configRef.current.enabled = true;
     configRef.current.currentPos=cssToNormalPos(getPosFromEvent(e));
     // console.log(configRef)
@@ -95,6 +96,10 @@ const Canvas = () => {
         ctx.stroke();
         ctx.closePath();
         break;
+      case 'image':
+        const img = new Image();
+        img.src = data.src;
+        img.onload = ()=>ctx.drawImage(img, 0,0);
       default:
         break;
     }
