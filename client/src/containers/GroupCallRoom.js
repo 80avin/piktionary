@@ -52,7 +52,7 @@ class GroupCallRoom {
   startStream(stream) {
     this.localStream = stream;
     for (let pid in this.peers) {
-      debugger
+      // debugger
       this.peers[pid].peer.send('hi hi');
       console.log('adding stream', this.peers[pid])
       this.peers[pid].peer.addStream(stream)
@@ -72,7 +72,7 @@ class GroupCallRoom {
     return peer;
   }
   addPeer(incomingSignal, callerId) {
-    if(this.peers[callerId]) delete this.peers[callerId]
+    // if(this.peers[callerId]) delete this.peers[callerId]
     const peer = new Peer({
       initiator: false,
       // trickle: false,
