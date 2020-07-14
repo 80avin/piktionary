@@ -5,32 +5,47 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import SupervisorAccountRoundedIcon from '@material-ui/icons/SupervisorAccountRounded';
+import { Paper, Container } from '@material-ui/core'
+import CallContainer from './CallContainer'
 
 export default class GameUiContainer extends Component {
   static propTypes = {
     socket: PropTypes.object
   }
+  constructor(props){
+    super(props);
+  }
 
   render() {
     return (
       <div>
-        <AppBar>
+        {/* TODO make responsive drawer */}
+        <AppBar position="static">
           <Toolbar>
             <IconButton edge="start">
+              {/*use AvatarGroup */}
               <SupervisorAccountRoundedIcon
-              fontSize="large"
-              color="disabled"
+                fontSize="large"
+                style={{ color: 'white' }}
               />
             </IconButton>
+
           </Toolbar>
         </AppBar>
-        <CanvasContainer
-          socket={this.props.socket}
-          colors={[
-            '#B80000', '#DB3E00', '#FCCB00', '#008B02', '#006B76', '#1273DE', '#004DCF', '#5300EB',
-            '#EB9694', '#FAD0C3', '#FEF3BD', '#C1E1C5', '#BEDADC', '#C4DEF6', '#BED3F3', '#D4C4FB',
-            '#000000', '#222222', '#444444', '#666666', '#999999', '#bbbbbb', '#dddddd', '#ffffff',
-          ]} />
+        <Container>
+          <Paper elevation={3} variant="outlined" style={{ color: 'green', overflowY: 'scroll', width: '100%', height: '50px' }}>
+            <p>
+              Falaana : guessed the word
+            </p><p>
+              Falaana-2 : liked
+            </p>
+          </Paper>
+          <CanvasContainer
+            socket={this.props.socket}
+          />
+          <CallContainer socket={this.props.socket}/>
+          <input type="text"/>
+        </Container>
       </div>
     )
   }

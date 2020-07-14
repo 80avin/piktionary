@@ -3,6 +3,7 @@ import Canvas from '../components/Canvas'
 import { GithubPicker } from "react-color";
 import Slider from "@material-ui/core/Slider";
 import toolManager from './ToolManager'
+import ToolButtons from '../components/ToolButtons';
 
 class CanvasContainer extends Component {
   constructor(props) {
@@ -41,11 +42,11 @@ class CanvasContainer extends Component {
     toolManager.move(e);
   }
 
-  changeColor(color) {
-    console.log({ color });
-    toolManager.fgColor = color.hex
+  sizeChange(e){
+    e.preventDefault();
+    const size = toolManager.size - Math.floor(e.deltaY/53*3);
+    toolManager.setProp('size',Math.min(50, Math.max(5, size)));
   }
-
   render() {
     return (
       <>
@@ -55,30 +56,23 @@ class CanvasContainer extends Component {
             drawEnd={(e) => this.drawEnd(e)}
             drawMove={(e) => this.drawMove(e)}
             drawStart={(e) => this.drawStart(e)}
-          />
-          <GithubPicker
-            color={toolManager.fgColor}
-            onChangeComplete={(c) => toolManager.setProp('fgColor', c.hex)}
-            triangle='hide'
-            colors={this.colors}
+            sizeChange={(e)=>this.sizeChange(e)}
           />
           <Slider
             defaultValue={toolManager.size}
             onChange={(e, v) => toolManager.setProp('size', v)}
             step={1}
-            min={2}
-            max={30}
+            min={5}
+            max={40}
             track={false}
             valueLabelDisplay='auto'
             style={{ width: '150px' }}
           />
-          <div>
-            <input type='button' onClick={e=>toolManager.select(e.target.value)} value='pen'/>
-            <input type='button' onClick={e=>toolManager.select(e.target.value)} value='clear'/>
-            <input type='button' onClick={e=>toolManager.select(e.target.value)} value='eraser'/>
-            <input type='button' onClick={e=>toolManager.select(e.target.value)} value='fill'/>
-            <input type='button' onClick={e=>toolManager.select(e.target.value)} value='undo'/>
-          </div>
+          <ToolButtons toolManager={toolManager} colors={[
+              '#B80000', '#DB3E00', '#FCCB00', '#008B02', '#006B76', '#1273DE', '#004DCF', '#5300EB',
+              '#EB9694', '#FAD0C3', '#FEF3BD', '#C1E1C5', '#BEDADC', '#C4DEF6', '#BED3F3', '#D4C4FB',
+              '#000000', '#222222', '#444444', '#666666', '#999999', '#bbbbbb', '#dddddd', '#ffffff',
+            ]} />
         </div>
       </>
     )

@@ -2,9 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const Canvas = props => {
+  const setRef=(ref)=>{
+    if(!ref) return;
+    ref.addEventListener('wheel',props.sizeChange,{passive:false});
+    props.setRef(ref);
+  }
   return (
-    <canvas width='500' height='500'
-      ref={props.setRef}
+    <canvas width='1000' height='1000'
+      ref={setRef}
       onMouseDown={props.drawStart}
       onMouseUp={props.drawEnd}
       onMouseOut={props.drawEnd}
@@ -15,7 +20,9 @@ const Canvas = props => {
       onTouchCancel={props.drawEnd}
       onTouchMove={props.drawMove}
 
-      style={{ width:'min(100vw,100vh)',height:'min(100vw,100vh)',border: '0px solid black', touchAction: 'pinch-zoom', backgroundColor:'white' }}
+      // onWheelC={props.sizeChange}
+
+      style={{ width:'min(70vw,70vh)',height:'min(70vw,70vh)',border: '0px solid black', touchAction: 'pinch-zoom', backgroundColor:'white' }}
     />
   )
 }
@@ -25,6 +32,7 @@ Canvas.propTypes = {
   drawStart: PropTypes.func.isRequired,
   drawEnd: PropTypes.func.isRequired,
   drawMove: PropTypes.func.isRequired,
+  sizeChange : PropTypes.func.isRequired,
 }
 
 export default Canvas

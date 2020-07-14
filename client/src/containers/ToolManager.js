@@ -6,19 +6,15 @@ class ToolManager {
     this.fgColor = '#ff0000';
     this.bgColor = '#ffffff';
     this.currentPos = [0, 0];
-    this.size = 2;
+    this.size = 10;
     this.activeTool = null;
     this.enabled = false;
-    this.undoStack=[]
+    this.undoStack=[];
   }
-  init(ctx, socket) {
+  init(ctx, socket, props={}) {
     this.ctx = ctx;
     this.socket = socket;
-    this.fgColor = '#ff0000';
-    this.bgColor = '#ffffff';
-    this.currentPos = [0, 0];
-    this.size = 2;
-    this.activeTool = null;
+    this.activeTool = Object.keys(this.tools).length===0?null:Object.keys(this.tools)[0];
     this.enabled = false;
     this.socket.on('drawing', data => this.draw(data));
     this.undoStack=[]
@@ -27,27 +23,28 @@ class ToolManager {
     if(!['fgColor','bgColor','size'].some(p=>p===prop)) return;
     this[prop]=v;
     if(!['fgColor','size'].some(p=>p===prop)) return;
-    const cursor = this.tools[this.activeTool].cursor(undefined, this);
-    if (cursor) this.ctx.canvas.style.cursor = `${cursor}, auto`
+    this.setCursor();
   }
   add(name, toolObject) {
     this.tools[name] = { name, ...toolObject };
   }
   select(name, e) {
+    if(!this.tools[name]) return;
     this.tools[name].select(e, this);
     if (this.tools[name].sticky) this.activeTool = name;
     this.enabled = false;
-    const cursor = this.tools[name].cursor(e, this);
-    if (cursor) this.ctx.canvas.style.cursor = `${cursor}, auto`
+    this.setCursor();
   }
   start(e) {
-    // debugger
+    if(!this.tools[this.activeTool]) return;
     this.tools[this.activeTool].start(e, this);
   }
   move(e) {
+    if(!this.tools[this.activeTool]) return;
     this.tools[this.activeTool].move(e, this);
   }
   end(e) {
+    if(!this.tools[this.activeTool]) return;
     this.tools[this.activeTool].end(e, this);
   }
   draw(data) {
@@ -58,9 +55,14 @@ class ToolManager {
       img.onload = () => this.ctx.drawImage(img, 0, 0);
       return;
     }
-    if (Object.keys(this.tools).some(k=>k===data.tool)) {
+    if (this.tools[data.tool]) {
       this.tools[data.tool].draw(data, this);
     }
+  }
+  setCursor(){
+    if(!this.tools[this.activeTool]) return;
+    const cursor = this.tools[this.activeTool].cursor(undefined, this);
+    if (cursor) this.ctx.canvas.style.cursor = `${cursor}, auto`
   }
 }
 
@@ -102,7 +104,6 @@ toolManager.add('pen', {
   },
   end: (e, tm) => { tm.enabled = false; },
   draw: (data, tm) => {
-    // debugger
     tm.ctx.beginPath();
     tm.ctx.moveTo(...normalToCanvasPos(data.config.currentPos, tm.ctx));
     tm.ctx.lineTo(...normalToCanvasPos(data.to, tm.ctx));
@@ -210,11 +211,10 @@ toolManager.add('fill', {
   move: (e) => { },
   end: (e) => { },
   draw: (data, tm) => {
-    debugger
     const pos = normalToCanvasPos(data.to, tm.ctx);
     const imageData = tm.ctx.getImageData(0, 0, tm.ctx.canvas.width, tm.ctx.canvas.height);
     const floodFill = new FloodFill(imageData);
-    floodFill.fill(tm.fgColor, Math.round(pos[0]), Math.round(pos[1]), 0);
+    floodFill.fill(data.color, Math.round(pos[0]), Math.round(pos[1]), 0);
     tm.ctx.putImageData(floodFill.imageData, 0, 0);
   },
   cursor: (e, tm) => { },
@@ -242,15 +242,20 @@ const cssToNormalPos = (pos, ctx) => {
 const normalToCanvasPos = (pos, ctx) => {
   return [pos[0] * ctx.canvas.width / 100, pos[1] * ctx.canvas.height / 100];
 }
+let _cursorCanvas = null;
 const getRoundCursor=(size, color)=>{
-  const canv = document.createElement('canvas');
-  canv.width = canv.height = size;
-  const ctx = canv.getContext('2d');
+  _cursorCanvas = _cursorCanvas || document.createElement('canvas');
+  
+  _cursorCanvas.width = _cursorCanvas.height = size+4;
+  const ctx = _cursorCanvas.getContext('2d');
   const rad = Math.round(size / 2);
-  ctx.arc(rad, rad, rad, 0, 2 * Math.PI);
+  ctx.arc(rad+2, rad+2, rad, 0, 2 * Math.PI);
   ctx.fillStyle = color;
+  ctx.strokeStyle='black';
+  ctx.lineWidth=2;
+  ctx.stroke();
   ctx.fill();
-  return `url(${canv.toDataURL()}) ${rad} ${rad}`
+  return `url(${_cursorCanvas.toDataURL()}) ${rad+2} ${rad+2}`
 }
 
 
