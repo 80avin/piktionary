@@ -1,19 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/core/Slider';
-import {colorFromGradPicker} from '../utils/canvasutils';
+import { colorFromGradPicker } from '../utils/canvasutils';
 
 function ValueLabelComponent(props) {
-  const {value} = props;
+  const { value } = props;
   return (
-    <div title={value} style={{height:30, width:30,color:colorFromGradPicker(value)}} >
+    <div title={value} style={{ height: 30, width: 30, color: colorFromGradPicker(value) }} >
       {props.children}
     </div>
   );
 }
 const grad = [
-  ...[0,1,2,3,4,5,6].map(i=>'hsl('+(i*60)+',100%,50%)'),
+  ...[0, 1, 2, 3, 4, 5, 6].map(i => 'hsl(' + (i * 60) + ',100%,50%)'),
   '#ffffff',
   '#000000'
 ].join(',');
@@ -24,15 +24,15 @@ const gradBoxShadow =
 const GradSlider = withStyles({
   root: {
     color: 'rgba(0,0,0,0)',
-    background:'linear-gradient(90deg, '+grad+')',
+    background: 'linear-gradient(90deg, ' + grad + ')',
     height: 0,
     padding: '15px 0',
-    borderRadius:'15px'
+    borderRadius: '15px'
   },
   thumb: {
     height: 34,
     width: 34,
-    border:'2px solid grey',
+    border: '2px solid grey',
     boxShadow: gradBoxShadow,
     marginTop: -17,
     marginLeft: -17,
@@ -54,22 +54,69 @@ const GradSlider = withStyles({
     opacity: 0,
     backgroundColor: '#bfbfbf',
   },
-  mark: {
-    backgroundColor: '#bfbfbf',
-    height: 8,
-    width: 1,
-    marginTop: -3,
-  },
-  markActive: {
-    opacity: 1,
-    backgroundColor: 'currentColor',
-  },
+  // mark: {
+  //   backgroundColor: '#bfbfbf',
+  //   height: 8,
+  //   width: 1,
+  //   marginTop: -3,
+  // },
+  // markActive: {
+  //   opacity: 1,
+  //   backgroundColor: 'currentColor',
+  // },
 })(Slider);
 
 const GradColorPicker = props => {
+  const [previousColors, setPreviousColors] = useState([
+    {value:0,color:'#ff0000'},
+    {value:60,color:'#ffff00'},
+    {value:120,color:'#00ff00'},
+    {value:180,color:'#00ffff'},
+    {value:240,color:'#0000ff'},
+    {value:300,color:'#ff00ff'},
+    {value:360,color:'#ff0000'},
+    {value:420,color:'#ffffff'},
+    {value:480,color:'#000000'},
+  ]);
+  const selectColorValue = (value, commit = true) => {
+    const color = colorFromGradPicker(value);
+    if (commit) {
+
+      const idx = previousColors.findIndex(el => el.value === value);
+      let _pc = [...previousColors];
+      if (idx === -1) {
+        _pc.unshift({ color, value });
+        while (_pc.length > 9) _pc.pop();
+      }
+      else {
+        _pc.splice(idx, 1);
+        _pc.unshift({ color, value });
+      }
+      setPreviousColors(_pc);
+      props.onChangeComplete({ color, value });
+    }
+    else {
+      props.onChange({ color, value });
+    }
+  }
   return (
-    <div>
-    <GradSlider onChange={(e,c)=>props.onChangeComplete({hex:colorFromGradPicker(c)})} aria-label="ios slider" valueLabelDisplay='on' defaultValue={0} min={0} max={480} ValueLabelComponent={ValueLabelComponent}/>
+    <div style={{ padding: '5px', borderRadius: '5px', backgroundColor: 'white', height: 'fit-content' }}>
+      <GradSlider
+        onChange={(e, c) => selectColorValue(c, false)}
+        onChangeCommitted={(e, c) => selectColorValue(c, true)}
+        aria-label="gradient slider"
+        valueLabelDisplay='on'
+        defaultValue={0}
+        min={0}
+        max={480}
+        ValueLabelComponent={ValueLabelComponent}
+      />
+      <div>
+        {previousColors.map(el => {
+          return <button key={el.value} className="recent-color-buttons" style={{ backgroundColor: el.color }} onClick={e => selectColorValue(el.value)} ></button>
+        })}
+      </div>
+
     </div>
   )
 }

@@ -13,6 +13,7 @@
     "react": "^16.13.1",
     "react-color": "^2.18.1",
     "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "simple-peer": "^9.7.2",
     "socket.io-client": "^2.3.0",

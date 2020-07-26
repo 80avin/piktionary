@@ -42,37 +42,40 @@ class CanvasContainer extends Component {
     toolManager.move(e);
   }
 
-  sizeChange(e){
+  sizeChange(e) {
     e.preventDefault();
-    const size = toolManager.size - Math.floor(e.deltaY/53*3);
-    toolManager.setProp('size',Math.min(50, Math.max(5, size)));
+    const size = toolManager.size - Math.floor(e.deltaY / 53 * 3);
+    toolManager.setProp('size', Math.min(50, Math.max(5, size)));
   }
   render() {
     return (
       <>
-        <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', backgroundColor: '#f3f3f3' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', flexDirection: 'column', backgroundColor: '#f3f3f3' }}>
+          <div></div>
           <Canvas
             setRef={inputRef => { this.canvasRef = inputRef; }}
             drawEnd={(e) => this.drawEnd(e)}
             drawMove={(e) => this.drawMove(e)}
             drawStart={(e) => this.drawStart(e)}
-            sizeChange={(e)=>this.sizeChange(e)}
+            sizeChange={(e) => this.sizeChange(e)}
           />
-          <Slider
-            defaultValue={toolManager.size}
-            onChange={(e, v) => toolManager.setProp('size', v)}
-            step={1}
-            min={5}
-            max={40}
-            track={false}
-            valueLabelDisplay='auto'
-            style={{ width: '150px' }}
-          />
-          <ToolButtons toolManager={toolManager} colors={[
+          <div>
+            <Slider
+              defaultValue={toolManager.size}
+              onChangeCommitted={(e, v) => toolManager.setProp('size', v)}
+              step={1}
+              min={5}
+              max={50}
+              track={false}
+              valueLabelDisplay='auto'
+              style={{ width: '150px' }}
+            />
+            <ToolButtons toolManager={toolManager} colors={[
               '#B80000', '#DB3E00', '#FCCB00', '#008B02', '#006B76', '#1273DE', '#004DCF', '#5300EB',
               '#EB9694', '#FAD0C3', '#FEF3BD', '#C1E1C5', '#BEDADC', '#C4DEF6', '#BED3F3', '#D4C4FB',
               '#000000', '#222222', '#444444', '#666666', '#999999', '#bbbbbb', '#dddddd', '#ffffff',
             ]} />
+          </div>
         </div>
       </>
     )

@@ -1,50 +1,50 @@
 import FloodFill from 'q-floodfill';
 
 class ToolManager {
-  constructor(){
-    this.tools={}
+  constructor() {
+    this.tools = {}
     this.fgColor = '#ff0000';
     this.bgColor = '#ffffff';
     this.currentPos = [0, 0];
     this.size = 10;
     this.activeTool = null;
     this.enabled = false;
-    this.undoStack=[];
+    this.undoStack = [];
   }
-  init(ctx, socket, props={}) {
+  init(ctx, socket, props = {}) {
     this.ctx = ctx;
     this.socket = socket;
-    this.activeTool = Object.keys(this.tools).length===0?null:Object.keys(this.tools)[0];
+    this.activeTool = Object.keys(this.tools).length === 0 ? null : Object.keys(this.tools)[0];
     this.enabled = false;
     this.socket.on('drawing', data => this.draw(data));
-    this.undoStack=[]
+    this.undoStack = []
   }
-  setProp(prop, v){
-    if(!['fgColor','bgColor','size'].some(p=>p===prop)) return;
-    this[prop]=v;
-    if(!['fgColor','size'].some(p=>p===prop)) return;
+  setProp(prop, v) {
+    if (!['fgColor', 'bgColor', 'size'].some(p => p === prop)) return;
+    this[prop] = v;
+    if (!['fgColor', 'size'].some(p => p === prop)) return;
     this.setCursor();
   }
   add(name, toolObject) {
     this.tools[name] = { name, ...toolObject };
   }
   select(name, e) {
-    if(!this.tools[name]) return;
+    if (!this.tools[name]) return;
     this.tools[name].select(e, this);
     if (this.tools[name].sticky) this.activeTool = name;
     this.enabled = false;
     this.setCursor();
   }
   start(e) {
-    if(!this.tools[this.activeTool]) return;
+    if (!this.tools[this.activeTool]) return;
     this.tools[this.activeTool].start(e, this);
   }
   move(e) {
-    if(!this.tools[this.activeTool]) return;
+    if (!this.tools[this.activeTool]) return;
     this.tools[this.activeTool].move(e, this);
   }
   end(e) {
-    if(!this.tools[this.activeTool]) return;
+    if (!this.tools[this.activeTool]) return;
     this.tools[this.activeTool].end(e, this);
   }
   draw(data) {
@@ -59,8 +59,8 @@ class ToolManager {
       this.tools[data.tool].draw(data, this);
     }
   }
-  setCursor(){
-    if(!this.tools[this.activeTool]) return;
+  setCursor() {
+    if (!this.tools[this.activeTool]) return;
     const cursor = this.tools[this.activeTool].cursor(undefined, this);
     if (cursor) this.ctx.canvas.style.cursor = `${cursor}, auto`
   }
@@ -70,7 +70,8 @@ const toolManager = new ToolManager();
 toolManager.add('pen', {
   select: (e) => { },
   deselect: (e, tm) => { },
-  start: (e, tm) => { tm.enabled = true;
+  start: (e, tm) => {
+    tm.enabled = true;
     tm.undoStack.push(tm.ctx.canvas.toDataURL());
     const data = {
       tool: 'pen',
@@ -114,7 +115,7 @@ toolManager.add('pen', {
     tm.ctx.closePath();
   },
   cursor: (e, tm) => {
-    const size = tm.size*tm.ctx.canvas.clientWidth/tm.ctx.canvas.width;
+    const size = tm.size * tm.ctx.canvas.clientWidth / tm.ctx.canvas.width;
     return getRoundCursor(size, tm.fgColor);//}) ${rad} ${rad}`;
   },
   sticky: true,
@@ -122,7 +123,8 @@ toolManager.add('pen', {
 toolManager.add('eraser', {
   select: (e) => { },
   deselect: (e, tm) => { },
-  start: (e, tm) => { tm.enabled = true;
+  start: (e, tm) => {
+    tm.enabled = true;
     tm.undoStack.push(tm.ctx.canvas.toDataURL());
     const data = {
       tool: 'pen',
@@ -137,7 +139,7 @@ toolManager.add('eraser', {
     tm.draw(data);
     tm.socket.emit('drawing', data);
     tm.currentPos = data.to;
-   },
+  },
   move: (e, tm) => {
     if (!tm.enabled) return;
     const data = {
@@ -155,9 +157,9 @@ toolManager.add('eraser', {
     tm.currentPos = data.to;
   },
   end: (e, tm) => { tm.enabled = false; },
-  draw: (data, tm) => {},
+  draw: (data, tm) => { },
   cursor: (e, tm) => {
-    const size = tm.size*tm.ctx.canvas.clientWidth/tm.ctx.canvas.width;
+    const size = tm.size * tm.ctx.canvas.clientWidth / tm.ctx.canvas.width;
     return getRoundCursor(size, tm.bgColor);//}) ${rad} ${rad}`;
   },
   sticky: true,
@@ -243,19 +245,27 @@ const normalToCanvasPos = (pos, ctx) => {
   return [pos[0] * ctx.canvas.width / 100, pos[1] * ctx.canvas.height / 100];
 }
 let _cursorCanvas = null;
-const getRoundCursor=(size, color)=>{
+const getRoundCursor = (size, color) => {
   _cursorCanvas = _cursorCanvas || document.createElement('canvas');
-  
-  _cursorCanvas.width = _cursorCanvas.height = size+4;
+
+  _cursorCanvas.width = _cursorCanvas.height = size + 6;
   const ctx = _cursorCanvas.getContext('2d');
   const rad = Math.round(size / 2);
-  ctx.arc(rad+2, rad+2, rad, 0, 2 * Math.PI);
+  ctx.beginPath()
+  ctx.arc(rad + 3, rad + 3, rad, 0, 2 * Math.PI);
   ctx.fillStyle = color;
-  ctx.strokeStyle='black';
-  ctx.lineWidth=2;
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 3;
   ctx.stroke();
   ctx.fill();
-  return `url(${_cursorCanvas.toDataURL()}) ${rad+2} ${rad+2}`
+  ctx.closePath();
+  ctx.beginPath();
+  ctx.arc(rad + 3, rad + 3, rad + 2, 0, 2 * Math.PI);
+  ctx.lineWidth=1;
+  ctx.strokeStyle = 'black'
+  ctx.stroke();
+  ctx.closePath();
+  return `url(${_cursorCanvas.toDataURL()}) ${rad + 3} ${rad + 3}`
 }
 
 

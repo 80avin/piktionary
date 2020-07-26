@@ -12,8 +12,13 @@ const ToolButtons = props => {
     props.toolManager.select(v);
     setactiveTool(props.toolManager.activeTool)
   }
-  const changeColor = (c) => {
-    props.toolManager.setProp('fgColor', c.hex);
+  /**
+   * 
+   * @param {{color:string, value:Number}} c
+   * @param {Boolean} commit Commit the change or is it transient ?
+   */
+  const changeColor = (c, commit=true) => {
+    if(commit) props.toolManager.setProp('fgColor', c.color);
     setFgColor(props.toolManager.fgColor)
   }
   useEffect(() => {
@@ -24,26 +29,23 @@ const ToolButtons = props => {
   }, [props.toolManager.fgColor])
   return (
     <div>
-      <GithubPicker
+      {/* <GithubPicker
         color={fgColor}
         onChangeComplete={changeColor}
         triangle='hide'
         colors={props.colors}
-      />
-      <ColorPicker
-      onChangeComplete={changeColor}/>
-      <GradColorPicker 
-      onChangeComplete={changeColor} />
+      /> */}
+      {/* <ColorPicker
+      onChangeComplete={changeColor}/> */}
+      <GradColorPicker
+      onChange={c=>changeColor(c,false)}
+        onChangeComplete={c=>changeColor(c,true)} />
       <ToggleButtonGroup exclusive value={activeTool} onChange={handleChange} color="secondary" variant='outlined'>
         <ToggleButton value='pen' aria-label='pen'>
           <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M 14.5833 29.1667 C 11.125 29.1667 8.33334 31.9583 8.33334 35.4167 C 8.33334 38.1458 5.91667 39.5833 4.16667 39.5833 C 6.08334 42.125 9.35417 43.75 12.5 43.75 C 17.1042 43.75 20.8333 40.0208 20.8333 35.4167 C 20.8333 31.9583 18.0417 29.1667 14.5833 29.1667 Z" fill={props.toolManager.fgColor}></path>
             <path d="M 43.1458 9.64583 L 40.3542 6.85416 C 40.1614 6.66103 39.9325 6.50781 39.6805 6.40326 C 39.4284 6.29872 39.1583 6.2449 38.8854 6.2449 C 38.6126 6.2449 38.3424 6.29872 38.0904 6.40326 C 37.8383 6.50781 37.6094 6.66103 37.4167 6.85416 L 18.75 25.5208 L 24.4792 31.25 L 43.1458 12.5833 C 43.339 12.3906 43.4922 12.1617 43.5967 11.9096 C 43.7013 11.6576 43.7551 11.3874 43.7551 11.1146 C 43.7551 10.8417 43.7013 10.5716 43.5967 10.3195 C 43.4922 10.0675 43.339 9.83857 43.1458 9.64583 Z" fill="black"></path>
           </svg>
-          {/*
-          <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M14.5833 29.1667C11.125 29.1667 8.33334 31.9583 8.33334 35.4167C8.33334 38.1458 5.91667 39.5833 4.16667 39.5833C6.08334 42.125 9.35417 43.75 12.5 43.75C17.1042 43.75 20.8333 40.0208 20.8333 35.4167C20.8333 31.9583 18.0417 29.1667 14.5833 29.1667ZM43.1458 9.64583L40.3542 6.85416C40.1614 6.66103 39.9325 6.50781 39.6805 6.40326C39.4284 6.29872 39.1583 6.2449 38.8854 6.2449C38.6126 6.2449 38.3424 6.29872 38.0904 6.40326C37.8383 6.50781 37.6094 6.66103 37.4167 6.85416L18.75 25.5208L24.4792 31.25L43.1458 12.5833C43.339 12.3906 43.4922 12.1617 43.5967 11.9096C43.7013 11.6576 43.7551 11.3874 43.7551 11.1146C43.7551 10.8417 43.7013 10.5716 43.5967 10.3195C43.4922 10.0675 43.339 9.83857 43.1458 9.64583V9.64583Z" fill={props.toolManager.fgColor} />
-</svg>*/}
         </ToggleButton>
         <ToggleButton value='eraser' >
           <svg width="49" height="50" viewBox="0 0 49 50" fill="none" xmlns="http://www.w3.org/2000/svg">

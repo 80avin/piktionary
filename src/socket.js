@@ -38,7 +38,7 @@ const init = (server) => {
     socket.on("join call room", () => {
       if (users[callRoom]) {
         const length = users[callRoom].length;
-        if (length === 4) {
+        if (length === 15) {
           socket.emit("room full");
           return;
         }
@@ -59,6 +59,10 @@ const init = (server) => {
     socket.on("returning call signal", payload => {
       socket.to(payload.callerId).emit('receiving returned call signal', { signal: payload.signal, id: socket.id });
     });
+    socket.on('leaving call',()=>{
+      console.log('window closing ',socket.id);
+      socket.to(callRoom).broadcast.emit('leave call', { id: socket.id })
+    })
     socket.on('disconnecting', () => {
       console.log(`${socket.id} is leaving`)
       if (users[callRoom])
@@ -66,12 +70,10 @@ const init = (server) => {
       socket.to(callRoom).broadcast.emit('leave call', { id: socket.id })
     })
     socket.on('disconnect', () => {
-      // const roomID = socketToRoom[socket.id];
-      // let room = users[roomID];
-      // if (room) {
-      // room = room.filter(id => id !== socket.id);
-      // users[roomID] = room;
-      // }
+      console.log(`${socket.id} is leaving`);
+      if (users[callRoom])
+        users[callRoom] = users[callRoom].filter(id => id !== socket.id);
+      if(socket)socket.to(callRoom).broadcast.emit('leave call', { id: socket.id });
     });
 
   });
