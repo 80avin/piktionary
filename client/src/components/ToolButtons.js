@@ -17,9 +17,10 @@ const ToolButtons = props => {
    * @param {{color:string, value:Number}} c
    * @param {Boolean} commit Commit the change or is it transient ?
    */
-  const changeColor = (c, commit=true) => {
-    if(commit) props.toolManager.setProp('fgColor', c.color);
-    setFgColor(props.toolManager.fgColor)
+  const changeColor = (c, commit = true) => {
+    if (commit) props.toolManager.setProp('fgColor', c.color);
+    // setFgColor(props.toolManager.fgColor)
+    setFgColor(c.color)
   }
   useEffect(() => {
     setactiveTool(props.toolManager.activeTool);
@@ -28,22 +29,14 @@ const ToolButtons = props => {
     setFgColor(props.toolManager.fgColor)
   }, [props.toolManager.fgColor])
   return (
-    <div>
-      {/* <GithubPicker
-        color={fgColor}
-        onChangeComplete={changeColor}
-        triangle='hide'
-        colors={props.colors}
-      /> */}
-      {/* <ColorPicker
-      onChangeComplete={changeColor}/> */}
+    <div style={{width:'75%'}}>
       <GradColorPicker
-      onChange={c=>changeColor(c,false)}
-        onChangeComplete={c=>changeColor(c,true)} />
+        onChange={c => changeColor(c, false)}
+        onChangeComplete={c => changeColor(c, true)} />
       <ToggleButtonGroup exclusive value={activeTool} onChange={handleChange} color="secondary" variant='outlined'>
         <ToggleButton value='pen' aria-label='pen'>
           <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M 14.5833 29.1667 C 11.125 29.1667 8.33334 31.9583 8.33334 35.4167 C 8.33334 38.1458 5.91667 39.5833 4.16667 39.5833 C 6.08334 42.125 9.35417 43.75 12.5 43.75 C 17.1042 43.75 20.8333 40.0208 20.8333 35.4167 C 20.8333 31.9583 18.0417 29.1667 14.5833 29.1667 Z" fill={props.toolManager.fgColor}></path>
+            <path d="M 14.5833 29.1667 C 11.125 29.1667 8.33334 31.9583 8.33334 35.4167 C 8.33334 38.1458 5.91667 39.5833 4.16667 39.5833 C 6.08334 42.125 9.35417 43.75 12.5 43.75 C 17.1042 43.75 20.8333 40.0208 20.8333 35.4167 C 20.8333 31.9583 18.0417 29.1667 14.5833 29.1667 Z" fill={fgColor}></path>
             <path d="M 43.1458 9.64583 L 40.3542 6.85416 C 40.1614 6.66103 39.9325 6.50781 39.6805 6.40326 C 39.4284 6.29872 39.1583 6.2449 38.8854 6.2449 C 38.6126 6.2449 38.3424 6.29872 38.0904 6.40326 C 37.8383 6.50781 37.6094 6.66103 37.4167 6.85416 L 18.75 25.5208 L 24.4792 31.25 L 43.1458 12.5833 C 43.339 12.3906 43.4922 12.1617 43.5967 11.9096 C 43.7013 11.6576 43.7551 11.3874 43.7551 11.1146 C 43.7551 10.8417 43.7013 10.5716 43.5967 10.3195 C 43.4922 10.0675 43.339 9.83857 43.1458 9.64583 Z" fill="black"></path>
           </svg>
         </ToggleButton>
@@ -56,7 +49,7 @@ const ToolButtons = props => {
           <svg width="51" height="50" viewBox="0 0 51 50" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clipPath="url(#clip0)">
               <path d="M34.5769 18.625L15.9519 0L13.0144 2.9375L17.9727 7.89583L7.24358 18.625C6.95131 18.9137 6.71926 19.2576 6.56088 19.6367C6.4025 20.0158 6.32095 20.4225 6.32095 20.8333C6.32095 21.2442 6.4025 21.6509 6.56088 22.03C6.71926 22.4091 6.95131 22.7529 7.24358 23.0417L18.7019 34.5C19.3061 35.1042 20.1186 35.4167 20.9102 35.4167C21.7019 35.4167 22.5144 35.1042 23.1186 34.5L34.5769 23.0417C35.8061 21.8333 35.8061 19.8542 34.5769 18.625ZM10.9311 20.8333L20.9102 10.8542L30.8894 20.8333H10.9311ZM39.6602 23.9583C39.6602 23.9583 35.4936 28.4792 35.4936 31.25C35.4936 33.5417 37.3686 35.4167 39.6602 35.4167C41.9519 35.4167 43.8269 33.5417 43.8269 31.25C43.8269 28.4792 39.6602 23.9583 39.6602 23.9583Z" fill="black" />
-              <path d="M0.0769196 41.6667H50.0769V50H0.0769196V41.6667Z" fill={props.toolManager.fgColor} fillOpacity="1.0" />
+              <path d="M0.0769196 41.6667H50.0769V50H0.0769196V41.6667Z" fill={fgColor} fillOpacity="1.0" />
             </g>
             <defs>
               <clipPath id="clip0">

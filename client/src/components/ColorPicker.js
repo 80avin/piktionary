@@ -9,7 +9,7 @@ const ColorPicker = props => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    const ctx = canvasRef.current.getContext('2d');
+    const ctx = canvasRef.current.getContext('2d',{alpha:false});
     // const ctx = new CanvasRenderingContext2D()
     const colorWidth = 30;
     const grad = ctx.createLinearGradient(0,0,8*colorWidth, 0);
@@ -31,7 +31,7 @@ const ColorPicker = props => {
     drawColorHistory()
   }, [prevColors])
   const drawColorHistory=()=>{
-    const ctx = canvasRef.current.getContext('2d');
+    const ctx = canvasRef.current.getContext('2d',{alpha:false});
     prevColors.forEach((c,i)=>{
       ctx.beginPath();
       ctx.fillStyle=c;
@@ -44,7 +44,7 @@ const ColorPicker = props => {
   const selectColor=(e)=>{
     console.log({...e})
     console.log(getPosFromEvent(e))
-    const ctx = canvasRef.current.getContext('2d');
+    const ctx = canvasRef.current.getContext('2d',{alpha:false});
     // const ctx = new CanvasRenderingContext2D();
 
     const pixelData = ctx.getImageData(...getPosFromEvent(e),1,1);

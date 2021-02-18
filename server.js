@@ -13,7 +13,8 @@ app.use(require('./src/routes'));
 
 let server = null;
 // console.log(process.env.NODE_ENV)
-if (process.env.NODE_ENV === 'PRODUCTION') {
+// always serve from http and use chrome://flags/#unsafely-treat-insecure-origin-as-secure to allow secure access
+if (1||process.env.NODE_ENV === 'PRODUCTION') {
   server = app.listen(PORT, null, function () {
     console.log("Listening on port " + PORT);
   });

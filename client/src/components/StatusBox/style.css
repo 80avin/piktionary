@@ -1,0 +1,8 @@
+div.statusbox{
+  width:100%;
+  min-height: 22px;
+  background-color: #9bb01c;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 2px;
+}

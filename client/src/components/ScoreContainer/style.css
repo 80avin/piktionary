@@ -1,0 +1,69 @@
+.score-container{
+  height: 50px;
+  width: 100%;
+  overflow: scroll hidden;
+  box-sizing: border-box;
+  border: 1px solid black;
+  border-radius: 25px;
+  margin-bottom: 2px;
+  /* display: flex; */
+  padding:2px 20px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+.score-container::-webkit-scrollbar {
+  width:0;
+  height:0
+}
+.score-container > div{
+  width: max-content;
+  height: 100%;
+  display: inline-flex;
+}
+.score-card{
+  width:36px;
+  height:36px;
+  position:relative;
+  margin-right: 10px;
+  display: inline-block;
+}
+.rank-circle{
+  position:absolute;
+  background-color:#FADE1A;
+  width:0.8rem;
+  height:0.8rem;
+  border-radius:50%;
+  line-height:0.8rem;
+  text-align:center;
+  top:0;
+  left:0;
+  font-size:0.6rem;
+  color:brown;
+  opacity:0.6;
+}
+.avatar{
+  width:100%;
+  height:100%;
+  background:#ffff70;
+  position:absolute;
+  border-radius:50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.avatar img{
+  max-height: 100%;
+  max-width: 100%;
+  height: 90%;
+}
+.rank-name{
+  position:absolute;
+  bottom:-0.5rem;
+  min-height:0.5rem;
+  height:0.5rem;
+  overflow:hidden;
+  line-height:.5rem;
+  font-size:0.5rem;
+  width: 100%;
+  text-align:center;
+}

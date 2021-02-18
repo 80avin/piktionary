@@ -1,37 +1,54 @@
 export const getPosFromEvent = (e) => {
+  let x, y;
   if (typeof (e.pageX) !== "undefined") {
-    return [
-      (e.pageX) - e.target.offsetLeft - e.target.clientLeft,
-      (e.pageY) - e.target.offsetTop - e.target.clientTop,
-    ]
+    [x, y] = [e.pageX, e.pageY];
   }
   else if (e.touches) {
-    return [
-      (e.touches[0].pageX) - e.target.offsetLeft - e.target.clientLeft - (parseInt(e.target.style.paddingLeft) || 0),
-      (e.touches[0].pageY) - e.target.offsetTop - e.target.clientTop - (parseInt(e.target.style.paddingTop) || 0),
-    ]
+    [x, y] = [e.touches[0].pageX, e.touches[0].pageY];
   }
+  else
+    return null;
+  const boundingRect = e.target.getBoundingClientRect();
+  return [
+    (x) - boundingRect.left - (parseInt(e.target.style.paddingLeft) || 0),
+    (y) - boundingRect.top - (parseInt(e.target.style.paddingTop) || 0),
+    // (x) - e.target.offsetLeft - e.target.clientLeft,
+    // (y) - e.target.offsetTop - e.target.clientTop,
+  ]
 }
 
 export const cssToNormalPos = (pos, ctx) => {
-  return [100 * pos[0] / ctx.canvas.clientWidth, 100 * pos[1] / ctx.canvas.clientHeight];
-}
-export const normalToCanvasPos = (pos, ctx) => {
-  return [pos[0] * ctx.canvas.width / 100, pos[1] * ctx.canvas.height / 100];
-}
-export const getRoundCursor = (size, color) => {
-  const canv = document.createElement('canvas');
-  canv.width = canv.height = size;
-  const ctx = canv.getContext('2d');
-  const rad = Math.round(size / 2);
-  ctx.arc(rad, rad, rad, 0, 2 * Math.PI);
-  ctx.fillStyle = color;
-  ctx.fill();
-  return `url(${canv.toDataURL()}) ${rad} ${rad}`
+  const bcr = ctx.canvas.getBoundingClientRect();
+  return [100 * pos[0] / bcr.width, 100 * pos[1] / bcr.height];
 }
 
-export const linMap = (x, x1, y1, x2, y2) => (y2 - y1) / (x2 - x1) * (x - x1) + y1;
-export const linearInterp = (frac, x1, x2) => Math.round(frac * (x2 - x1) + x1)
+export const normalToCanvasPos = (pos, ctx) => {
+  return [Math.round(pos[0] * ctx.canvas.width / 100), Math.round(pos[1] * ctx.canvas.height / 100)];
+}
+
+let _cursorCanvas = null;
+export const getRoundCursor = (size, color) => {
+  _cursorCanvas = _cursorCanvas || document.createElement('canvas');
+
+  _cursorCanvas.width = _cursorCanvas.height = size + 6;
+  const ctx = _cursorCanvas.getContext('2d');
+  const rad = Math.round(size / 2);
+  ctx.beginPath()
+  ctx.arc(rad + 3, rad + 3, rad, 0, 2 * Math.PI);
+  ctx.fillStyle = color;
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.fill();
+  ctx.closePath();
+  ctx.beginPath();
+  ctx.arc(rad + 3, rad + 3, rad + 2, 0, 2 * Math.PI);
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'black'
+  ctx.stroke();
+  ctx.closePath();
+  return `url(${_cursorCanvas.toDataURL()}) ${rad + 3} ${rad + 3}`
+}
 
 export const interpolateColor = (frac, color1, color2) => {
   return color1.map((c1, i) => Math.floor((color2[i] - color1[i]) * frac + color1[i]))
@@ -50,10 +67,11 @@ export const colorFromGradPicker = (value) => {
     [0, 0, 0],
   ]
   const i_lower = Math.floor(value / 60);
-  if (i_lower === grad.length-1) return rgbToHex(...grad[grad.length - 1]);
+  if (i_lower === grad.length - 1) return rgbToHex(...grad[grad.length - 1]);
   return rgbToHex(...interpolateColor((value / 60) % 1, grad[i_lower], grad[i_lower + 1]));
 }
 
 export const rgbToHex = (r, g, b) => {
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+  const f = (x) => x.toString(16).padStart(2, '0');
+  return `#${f(r)}${f(g)}${f(b)}`
 }

@@ -1,4 +1,5 @@
 import FloodFill from 'q-floodfill';
+import { getPosFromEvent, cssToNormalPos, normalToCanvasPos, getRoundCursor } from '../utils/canvasutils';
 
 class ToolManager {
   constructor() {
@@ -64,6 +65,18 @@ class ToolManager {
     const cursor = this.tools[this.activeTool].cursor(undefined, this);
     if (cursor) this.ctx.canvas.style.cursor = `${cursor}, auto`
   }
+  getCursor() {
+    if (!this.ctx) return 'url(123) a b'
+    return this.tools['pen'].cursor(undefined, this);
+  }
+  emit(topic = 'drawing', data) {
+    this.socket.emit(topic, data);
+  }
+  getCanvasScale() {
+    // console.log('tm',this)
+    if (!this.ctx) return 1;
+    return this.ctx.canvas.width / this.ctx.canvas.getBoundingClientRect().width;
+  }
 }
 
 const toolManager = new ToolManager();
@@ -84,7 +97,7 @@ toolManager.add('pen', {
       }
     };
     tm.draw(data);
-    tm.socket.emit('drawing', data);
+    tm.emit('drawing', data);
     tm.currentPos = data.to;
   },
   move: (e, tm) => {
@@ -100,22 +113,26 @@ toolManager.add('pen', {
       }
     };
     tm.draw(data);
-    tm.socket.emit('drawing', data);
+    tm.emit('drawing', data);
     tm.currentPos = data.to;
   },
   end: (e, tm) => { tm.enabled = false; },
   draw: (data, tm) => {
     tm.ctx.beginPath();
+    tm.ctx.translate(0.5,0.5);
+    const nm1 = [...normalToCanvasPos(data.config.currentPos, tm.ctx), ...normalToCanvasPos(data.to, tm.ctx)];
+    console.log('half',nm1.find(f=>(f%1!==0)));
     tm.ctx.moveTo(...normalToCanvasPos(data.config.currentPos, tm.ctx));
     tm.ctx.lineTo(...normalToCanvasPos(data.to, tm.ctx));
     tm.ctx.strokeStyle = data.config.color;
     tm.ctx.lineWidth = data.config.size;
     tm.ctx.lineCap = data.config.lineCap || 'round';
     tm.ctx.stroke();
+    tm.ctx.translate(-0.5,-0.5);
     tm.ctx.closePath();
   },
   cursor: (e, tm) => {
-    const size = tm.size * tm.ctx.canvas.clientWidth / tm.ctx.canvas.width;
+    const size = tm.size / tm.getCanvasScale();
     return getRoundCursor(size, tm.fgColor);//}) ${rad} ${rad}`;
   },
   sticky: true,
@@ -137,7 +154,7 @@ toolManager.add('eraser', {
       }
     };
     tm.draw(data);
-    tm.socket.emit('drawing', data);
+    tm.emit('drawing', data);
     tm.currentPos = data.to;
   },
   move: (e, tm) => {
@@ -153,13 +170,13 @@ toolManager.add('eraser', {
       }
     };
     tm.draw(data);
-    tm.socket.emit('drawing', data);
+    tm.emit('drawing', data);
     tm.currentPos = data.to;
   },
   end: (e, tm) => { tm.enabled = false; },
   draw: (data, tm) => { },
   cursor: (e, tm) => {
-    const size = tm.size * tm.ctx.canvas.clientWidth / tm.ctx.canvas.width;
+    const size = tm.size / tm.getCanvasScale();
     return getRoundCursor(size, tm.bgColor);//}) ${rad} ${rad}`;
   },
   sticky: true,
@@ -169,7 +186,7 @@ toolManager.add('clear', {
     tm.undoStack.push(tm.ctx.canvas.toDataURL());
     const data = { tool: 'clear' };
     tm.draw(data);
-    tm.socket.emit('drawing', data);
+    tm.emit('drawing', data);
   },
   deselect: (e, tm) => { },
   start: (e) => { },
@@ -187,7 +204,7 @@ toolManager.add('undo', {
     const img = tm.undoStack.pop();
     const data = { tool: 'image', src: img };
     tm.draw(data);
-    tm.socket.emit('drawing', data);
+    tm.emit('drawing', data);
   },
   deselect: (e, tm) => { },
   start: (e) => { },
@@ -208,7 +225,7 @@ toolManager.add('fill', {
       color: tm.fgColor,
     }
     tm.draw(data);
-    tm.socket.emit('drawing', data);
+    tm.emit('drawing', data);
   },
   move: (e) => { },
   end: (e) => { },
@@ -216,57 +233,14 @@ toolManager.add('fill', {
     const pos = normalToCanvasPos(data.to, tm.ctx);
     const imageData = tm.ctx.getImageData(0, 0, tm.ctx.canvas.width, tm.ctx.canvas.height);
     const floodFill = new FloodFill(imageData);
-    floodFill.fill(data.color, Math.round(pos[0]), Math.round(pos[1]), 0);
+    floodFill.fill(data.color, Math.round(pos[0]), Math.round(pos[1]), 10);
     tm.ctx.putImageData(floodFill.imageData, 0, 0);
   },
-  cursor: (e, tm) => { },
+  cursor: (e, tm) => {
+    const size = 5 / tm.getCanvasScale();
+    return getRoundCursor(size, tm.fgColor);
+  },
   sticky: true,
 })
-
-const getPosFromEvent = (e) => {
-  if (typeof (e.pageX) !== "undefined") {
-    return [
-      (e.pageX) - e.target.offsetLeft - e.target.clientLeft,
-      (e.pageY) - e.target.offsetTop - e.target.clientTop,
-    ]
-  }
-  else if (e.touches) {
-    return [
-      (e.touches[0].pageX) - e.target.offsetLeft - e.target.clientLeft,
-      (e.touches[0].pageY) - e.target.offsetTop - e.target.clientTop,
-    ]
-  }
-}
-
-const cssToNormalPos = (pos, ctx) => {
-  return [100 * pos[0] / ctx.canvas.clientWidth, 100 * pos[1] / ctx.canvas.clientHeight];
-}
-const normalToCanvasPos = (pos, ctx) => {
-  return [pos[0] * ctx.canvas.width / 100, pos[1] * ctx.canvas.height / 100];
-}
-let _cursorCanvas = null;
-const getRoundCursor = (size, color) => {
-  _cursorCanvas = _cursorCanvas || document.createElement('canvas');
-
-  _cursorCanvas.width = _cursorCanvas.height = size + 6;
-  const ctx = _cursorCanvas.getContext('2d');
-  const rad = Math.round(size / 2);
-  ctx.beginPath()
-  ctx.arc(rad + 3, rad + 3, rad, 0, 2 * Math.PI);
-  ctx.fillStyle = color;
-  ctx.strokeStyle = 'white';
-  ctx.lineWidth = 3;
-  ctx.stroke();
-  ctx.fill();
-  ctx.closePath();
-  ctx.beginPath();
-  ctx.arc(rad + 3, rad + 3, rad + 2, 0, 2 * Math.PI);
-  ctx.lineWidth=1;
-  ctx.strokeStyle = 'black'
-  ctx.stroke();
-  ctx.closePath();
-  return `url(${_cursorCanvas.toDataURL()}) ${rad + 3} ${rad + 3}`
-}
-
 
 export default toolManager;

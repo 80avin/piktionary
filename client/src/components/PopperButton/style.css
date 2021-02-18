@@ -1,0 +1,146 @@
+.popperButton{
+  position: relative;
+}
+.popperButton > button {
+  background-color: white;
+  border: 0px;
+  outline: 0px;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  position: relative;
+  box-shadow: 2px 2px 4px black;
+  padding: 0;
+}
+.popperButton > button[data-open="true"] {
+  background: #fff;
+  border-radius: 0% 50% 50% 0;
+  box-shadow: 1px 1px 1px black;
+  z-index: 1;
+}
+/* right placement */
+.popperButton > button[data-open="true"]:before,
+.popperButton > button[data-open="true"]:after {
+  width: 10px;
+  position: absolute;
+  height: 10px;
+  content: "";
+  z-index: -1;
+}
+.popperButton[data-placement="left"] > button[data-open="true"]:before,
+.popperButton[data-placement="left"] > button[data-open="true"]:after {
+  border-left: 10px solid white;
+  right: 100%;
+  margin-right: -10px;
+}
+.popperButton[data-placement="left"] > button[data-open="true"]:before {
+  top: -10px;
+  border-bottom: 10px solid white;
+  border-bottom-left-radius: 20px;
+}
+.popperButton[data-placement="left"] > button[data-open="true"]:after {
+  bottom: -10px;
+  border-top: 10px solid white;
+  border-top-left-radius: 20px;
+}
+
+/* left placement */
+.popperButton > button[data-open="true"]:before,
+.popperButton > button[data-open="true"]:after {
+  width: 10px;
+  position: absolute;
+  height: 10px;
+  content: "";
+}
+.popperButton[data-placement="right"] > button[data-open="true"]:before,
+.popperButton[data-placement="right"] > button[data-open="true"]:after {
+  border-right: 10px solid white;
+  left: 100%;
+  margin-left: -10px;
+}
+.popperButton[data-placement="right"] > button[data-open="true"]:before {
+  top: -10px;
+  border-bottom: 10px solid white;
+  border-bottom-right-radius: 20px;
+}
+.popperButton[data-placement="right"] > button[data-open="true"]:after {
+  bottom: -10px;
+  border-top: 10px solid white;
+  border-top-right-radius: 20px;
+}
+
+/* bottom placement */
+.popperButton > button[data-open="true"]:before,
+.popperButton > button[data-open="true"]:after {
+  width: 10px;
+  position: absolute;
+  height: 10px;
+  content: "";
+}
+.popperButton[data-placement="top"] > button[data-open="true"]:before,
+.popperButton[data-placement="bottom"] > button[data-open="true"]:after {
+  border-top: 10px solid white;
+  bottom: 100%;
+  margin-bottom: -10px;
+}
+.popperButton[data-placement="bottom"] > button[data-open="true"]:before {
+  right: -10px;
+  border-left: 10px solid white;
+  border-top-left-radius: 20px;
+}
+.popperButton[data-placement="bottom"] > button[data-open="true"]:after {
+  left: -10px;
+  border-right: 10px solid white;
+  border-top-right-radius: 20px;
+}
+
+/* top placement */
+.popperButton > button[data-open="true"]:before,
+.popperButton button[data-open="true"]:after {
+  width: 10px;
+  position: absolute;
+  height: 10px;
+  content: "";
+}
+.popperButton[data-placement="bottom"] > button[data-open="true"]:before,
+.popperButton[data-placement="bottom"] > button[data-open="true"]:after {
+  border-bottom: 10px solid white;
+  top: 100%;
+  margin-top: -10px;
+}
+.popperButton[data-placement="bottom"] > button[data-open="true"]:before {
+  left: -10px;
+  border-right: 10px solid white;
+  border-bottom-right-radius: 20px;
+}
+.popperButton[data-placement="bottom"] > button[data-open="true"]:after {
+  right: -10px;
+  border-left: 10px solid white;
+  border-bottom-left-radius: 20px;
+}
+
+div.popperEl {
+  background-color: white;
+  padding: 5px;
+  border-radius: 5px;
+  min-height: 60px;
+  min-width: 60px;
+  box-shadow: 1px 1px 1px black, -1px -1px 1px #00000020;
+  padding: 15px;
+}
+
+.popperEl[data-popper-placement^="top"] > .arrowEl {
+  bottom: -4px;
+}
+
+.popperEl[data-popper-placement^="bottom"] > .arrowEl {
+  top: -4px;
+}
+
+.popperEl[data-popper-placement^="left"] > .arrowEl {
+  right: -4px;
+}
+
+.popperEl[data-popper-placement^="right"] > .arrowEl {
+  left: -4px;
+}

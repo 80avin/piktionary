@@ -1,6 +1,6 @@
 import React from 'react'
 
-const GameUi = () => {
+const GameUI = () => {
   return (
     <div>
       
@@ -8,4 +8,4 @@ const GameUi = () => {
   )
 }
 
-export default GameUi
+export default GameUI

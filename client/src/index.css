@@ -1,22 +1,82 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
-.recent-color-buttons{
-  border: none;
-  width: 12.5%;
-  height: 30px;
+div#root{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow:hidden;
 }
-.recent-color-buttons:first-child, .recent-color-buttons:last-child{
-  width: 6.25%;
+
+.recent-color-buttons {
+  border: none;
+  /* width: 12.5%; */
+  width: 24px;
+  height: 24px;
+  box-shadow: 2px 2px 4px;
+  border: 0;
+  outline:0;
+  border-radius: 50%;
+}
+.recent-color-buttons:active{
+  box-shadow: 1px 1px 1px inset;
+}
+.recent-color-buttons:first-child,
+.recent-color-buttons:last-child {
+  /* width: 6.25%; */
+}
+
+.colorRange {
+  --thumbSize: 24px;
+  --trackSize: 20px;
+}
+
+.colorRange input {
+  appearance: none;
+  width: 100%;
+  appearance: none;
+  height: var(--trackSize);
+  border-radius: calc(var(--trackSize) / 2);
+  background: linear-gradient(
+    90deg,
+    hsl(0, 100%, 50%),
+    hsl(60, 100%, 50%),
+    hsl(120, 100%, 50%),
+    hsl(180, 100%, 50%),
+    hsl(240, 100%, 50%),
+    hsl(300, 100%, 50%),
+    hsl(360, 100%, 50%),
+    #ffffff,
+    #000000
+  );
+}
+.colorRange input::-webkit-slider-thumb,
+.colorRange input::-moz-range-thumb,
+.colorRange input::-ms-thumb {
+  appearance: none;
+  height: var(--thumbSize);
+  width: var(--thumbSize);
+}
+.colorRange thumb {
+  pointer-events: none;
+  height: var(--thumbSize);
+  width: var(--thumbSize);
+  border-radius: 50%;
+  position: absolute;
+  transform: translateY(-100%) translateX(-50%);
 }

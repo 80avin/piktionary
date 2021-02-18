@@ -1,0 +1,35 @@
+body{
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+}
+nav.game-header{
+  width: 100%;
+  top:0;
+  position: absolute;
+}
+div.game-body{
+  width:100%;
+  /* position: absolute; */
+}
+div.comments-box{
+  width:100%;
+}
+div.canvas-box{
+  width:100%;
+}
+div.canvas-box canvas{
+  width: 100%;
+}
+div.guesser-tools-box{
+  width:100%;
+}
+div.artist-tools-box{
+  width:100%;
+}
+div.bottom-sheet{
+  width:100%;
+  position: absolute;
+  bottom: -50px;
+}

@@ -1,0 +1,12 @@
+.gamePage{
+  overflow: hidden;
+  width:100vw;
+  background-color: #dddddd;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.comments-box p{
+  padding:0 5px;
+}

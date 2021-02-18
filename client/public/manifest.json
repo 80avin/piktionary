@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Piktionary",
+  "name": "Draw and guess game | Piktionary",
   "icons": [
     {
       "src": "favicon.ico",

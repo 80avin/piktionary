@@ -80,6 +80,7 @@ class GroupCallRoom {
     const peer = new Peer({
       initiator: true,
       wrtc,
+      trickle: false,
     });
     peer.on('signal', signal => this.socket.emit('sending call signal', {
       userToSignal: remoteId, callerId: myId, signal
@@ -90,6 +91,7 @@ class GroupCallRoom {
     const peer = new Peer({
       initiator: false,
       wrtc,
+      trickle: false,
     });
     peer.on('signal', signal => {console.log('sig1');this.socket.emit('returning call signal', {
       signal, callerId: remoteId
@@ -102,12 +104,13 @@ class GroupCallRoom {
   configPeerListeners(peer, remoteId) {
     console.log('cpl');
     peer.on('stream', (s) => { console.log('sig3');this.onRemoteStream(remoteId, s);console.log('sig4'); })
-    peer.on('data', (...d) => console.log(...d));
+    peer.on('data', (...d) => console.log('peer',...d));
     peer.on('close', () => {
       console.log('sig5');
       this.leavePeer(remoteId);
       console.log('sig6');
     });
+    peer.on('connect',()=>peer.send('hi'))
     if (this.localStream) peer.addStream(this.localStream);
     return peer;
   }
